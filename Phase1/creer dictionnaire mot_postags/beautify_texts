@@ -1,0 +1,5 @@
+Remplacer '\n' par ' '
+Remplacer '  ' par '\n'
+Supprimer les titres, les '\n\n'
+Remplacer les '. ' par '.\n'
+...
