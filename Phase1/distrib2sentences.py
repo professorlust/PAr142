@@ -33,7 +33,17 @@ def printt(resultat):
         print('Distance {:.6}: {}'.format(distance, word))
 
 def get_distrib_from_file(filename):
+    """ Get the distances of words.
     
+    Argument:
+        * filename: a path to the filename
+    Return:
+        * A list of couples like:
+         [('yourselves', 0.0007180493557825685),
+          ('lavs', 0.0007177011575549841),
+          ('progressives', 0.0007173722260631621),
+          ('tested', 0.0007169910822995007)]
+    """
     with open('scores', 'rb') as f:
         scores = np.abs(pk.load(f))
         scores = scores[0]
@@ -46,36 +56,54 @@ def get_distrib_from_file(filename):
     return resultat
 
 
-
-with open('word_dict_v2', 'rb') as f:
-    word_dict = pk.load(f)
-
-distrib = get_distrib_from_file('scores')
-
-dic_words = {}
-count_not_found= 0
-for word, proba in distrib:
-    if word in word_dict:
-        categorie = word_dict[word][0] #Even if several categories are there, I take the first one, arbitrarily.
-        if categorie not in dic_words:
-            dic_words[categorie] = [(word, proba)]
+def sort_words(path_to_score):
+    """ Sort the words and distance in a dictionnary by postag.
+    
+    All postags are found in a loaded dictionnary. These will be the keys 
+    of the returned dictionnary. The value of this dictionnary is a list of
+    all couples (word, probability) that belongs to this postag. Then each 
+    word from the distribution is compared to the loaded dictionnary, and 
+    then added to the right key.
+    
+    Argument: 
+        * A path to the distribution output by TF.
+    Returns:
+        * The dictionnary postag --> A list of couples (word, proba).
+    """
+    # Load the dictionnary word -> postags
+    with open('word_dict_v2', 'rb') as f:
+        word_dict = pk.load(f)
+    
+    distrib = get_distrib_from_file(path_to_score)
+    
+    dic_words = {}
+    count_not_found= 0
+    for word, proba in distrib:
+        if word in word_dict:
+            categorie = word_dict[word][0] #Even if several categories are there, I take the first one, arbitrarily.
+            if categorie not in dic_words:
+                dic_words[categorie] = [(word, proba)]
+            else:
+                dic_words[categorie].append((word, proba))
         else:
-            dic_words[categorie].append((word, proba))
-    else:
-        count_not_found += 1
-        print("key {} not found in dictionnary.".format(word))
-        
-print('not found: {}'.format(count_not_found))
-#print(dic_words)
+            count_not_found += 1
+            print("key {} not found in dictionnary.".format(word))
+            
+    print('not found: {}'.format(count_not_found))
+    
+    return dic_words
+    
+    
+    
+dic_words = sort_words('scores')
 
-      
 for key, value in dic_words.iteritems():    
     value.sort(key = lambda x:x[1]) 
     print(key, value[0:2])
     
 dic_desired = {}
 
-s = ['PRP', 'VBD', 'VBG', 'IN', 'DT', 'NN']
+s = ['PRP', 'VBD', 'VBG', 'IN', 'DT', 'NN', 'PRP', 'VBD', 'VBG', 'IN', 'DT', 'NN', 'PRP', 'VBD', 'VBG', 'IN', 'DT', 'NN']
 for postag in s:
     if postag in dic_desired:
         dic_desired[postag] += 1
@@ -93,6 +121,11 @@ for postag in s:
     word = dic_desired[postag].pop(-1)[0]
     new_s.append(word)
 
+
+
+
+
+print()
 new_s = " ".join(new_s)
 print(new_s)
 
