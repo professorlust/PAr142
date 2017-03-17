@@ -70,12 +70,15 @@ def sort_words(path_to_score):
     Returns:
         * The dictionnary postag --> A list of couples (word, proba).
     """
+    
     # Load the dictionnary word -> postags
     with open('word_dict_v2', 'rb') as f:
         word_dict = pk.load(f)
     
+    # Load the second dictionnary.
     distrib = get_distrib_from_file(path_to_score)
     
+    # Add in the third dictionnary the words.
     dic_words = {}
     count_not_found= 0
     for word, proba in distrib:
@@ -86,55 +89,52 @@ def sort_words(path_to_score):
             else:
                 dic_words[categorie].append((word, proba))
         else:
+            #TODO: this should not happen because I used the same data for
+            # both word_dict and distrib...
             count_not_found += 1
             print("key {} not found in dictionnary.".format(word))
             
-    print('not found: {}'.format(count_not_found))
+    print('{} words not found.'.format(count_not_found))
+    
+    # Sort every list (the shortest distance is at the end).
+    for key, value in dic_words.iteritems():    
+        value.sort(key = lambda x:x[1]) 
+        print(key, value[0])
     
     return dic_words
     
+
+def final_sentence(s, path_to_scores):
+
+    dic_words = sort_words(path_to_scores)
     
+    # Create a dictionnary of the number of the desired words.
+    dic_desired = {}
+    for postag in s:
+        if postag in dic_desired:
+            dic_desired[postag] += 1
+        else:
+            dic_desired[postag] = 1
+            
+    # Replace the number of the desired words by the desired words themselves.
+    for categorie, nb_elements in dic_desired.iteritems():
+        dic_desired[categorie] = dic_words[categorie][-1-nb_elements:-1]
+
+    # Create the final string.
+    new_s = []
+    for postag in s:
+        word = dic_desired[postag].pop(-1)[0] # Delete the last (=best) word.
+        new_s.append(word)
+    new_s = " ".join(new_s)
     
-dic_words = sort_words('scores')
+    return new_s
 
-for key, value in dic_words.iteritems():    
-    value.sort(key = lambda x:x[1]) 
-    print(key, value[0:2])
+if __name__ == '__main__':
     
-dic_desired = {}
-
-s = ['PRP', 'VBD', 'VBG', 'IN', 'DT', 'NN', 'PRP', 'VBD', 'VBG', 'IN', 'DT', 'NN', 'PRP', 'VBD', 'VBG', 'IN', 'DT', 'NN']
-for postag in s:
-    if postag in dic_desired:
-        dic_desired[postag] += 1
-    else:
-        dic_desired[postag] = 1
-        
-
-
-for categorie, nb_elements in dic_desired.iteritems():
-    dic_desired[categorie] = dic_words[categorie][-1-nb_elements:-1]
-    
-
-new_s = []
-for postag in s:
-    word = dic_desired[postag].pop(-1)[0]
-    new_s.append(word)
-
-
-
-
-
-print()
-new_s = " ".join(new_s)
-print(new_s)
-
-
-
-
-
-
-
+    # During this time, the king was a merciful creature.
+    # IN, DET, NN, DT, NN, VBD, DT, JJ, NN
+    s = ['IN', 'DT', 'NN', 'DT', 'NN', 'VBD', 'DT', 'JJ', 'NN', 'IN', 'DT', 'NN', 'DT', 'NN', 'VBD', 'DT', 'JJ', 'NN', 'IN', 'DT', 'NN', 'DT', 'NN', 'VBD', 'DT', 'JJ', 'NN']
+    print(final_sentence(s, 'scores'))
 
 
 
