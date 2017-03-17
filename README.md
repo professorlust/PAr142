@@ -1,5 +1,5 @@
-# Research Project PAr142 - Generating sentences from syntactic structures
-Ecole Centrale Lyon, 2017.
+# Generating sentences from syntactic structures
+Research Project PAr142 - Ecole Centrale Lyon, 2017.
 
 ## Requirements
 * Python 2.7
