@@ -1,4 +1,4 @@
-# Generating sentences from syntactic structures
+# Generating sentences from help syntactic structures
 Research Project PAr142 - Ecole Centrale Lyon, 2017.
 
 ## Requirements
