@@ -1,5 +1,6 @@
-# Generating sentences using syntactic structures
+# Generating sentences using syntactic structures 
 Research Project PAr142 - Ecole Centrale Lyon, 2017.
+[[Research paper](https://github.com/tblondelle/PAr142/blob/master/PAr142_RapportSoutenance.pdf)]
 
 ## Requirements
 * Python 2.7
